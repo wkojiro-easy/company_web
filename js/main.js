@@ -122,12 +122,12 @@ function initScrollAnimations() {
 }
 
 /**
- * Contact form handling
+ * Contact form handling (Formspree)
  */
 function initContactForm() {
     const form = document.getElementById('contact-form');
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         // Basic validation
@@ -145,19 +145,32 @@ function initContactForm() {
             return;
         }
 
-        // Simulate form submission
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = '送信中...';
         submitBtn.disabled = true;
 
-        // Simulate API call
-        setTimeout(() => {
-            showFormMessage('お問い合わせありがとうございます。内容を確認の上、担当者よりご連絡いたします。', 'success');
-            form.reset();
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                showFormMessage('お問い合わせありがとうございます。内容を確認の上、担当者よりご連絡いたします。', 'success');
+                form.reset();
+            } else {
+                showFormMessage('送信に失敗しました。しばらく経ってから再度お試しください。', 'error');
+            }
+        } catch (error) {
+            showFormMessage('送信に失敗しました。しばらく経ってから再度お試しください。', 'error');
+        } finally {
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
-        }, 1500);
+        }
     });
 }
 
