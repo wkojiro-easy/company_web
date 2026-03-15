@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initMobileNav();
     initSmoothScroll();
     initScrollAnimations();
+    initCaseReveal();
     initContactForm();
 });
 
@@ -119,6 +120,25 @@ function initScrollAnimations() {
         el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
         observer.observe(el);
     });
+}
+
+/**
+ * Scroll reveal for case cards
+ */
+function initCaseReveal() {
+    const cards = document.querySelectorAll('.scroll-reveal');
+    if (!cards.length) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { rootMargin: '0px 0px -60px 0px', threshold: 0.1 });
+
+    cards.forEach(card => observer.observe(card));
 }
 
 /**
